@@ -6,6 +6,8 @@ import signal
 import sys
 import textwrap
 from tracer import create_tracer
+from dataTracer import dataTracer
+
 
 
 gTracer = None
@@ -26,8 +28,19 @@ def disturb(data, error_rate, deletion_chance, rng):
         result.append(byte)
     return bytes(result)
 
-def handle_connection(src_socket, dst_socket, seed, error_rate, deletion_chance, stop_event, tracer):
+def dataDump(data, verbose, hexadecimal, dirChar, length, startingchar):
+    if verbose or hexadecimal:
+        import datetime
+        current_time = datetime.datetime.now()
+        print(f"{dirChar} {current_time.strftime('%Y-%m-%d %H:%M:%S.%f')} length={length} from={startingchar} to={startingchar+length-1}")
+        dataTracer(data, verbose, hexadecimal)
+        print("--")
+
+
+def handle_connection(src_socket, dst_socket, seed, error_rate, deletion_chance, verbose, hexadecimal, dirChar, stop_event, tracer):
+    outgoingByte = 0
     tracer.info("thread started")
+    tracer.debug("Random numnber generator seeded with %d" %seed)
     rng = random.Random(seed)
     src_socket.settimeout(0.25)  # Set timeout to 250ms for the source socket
     try:
@@ -37,6 +50,8 @@ def handle_connection(src_socket, dst_socket, seed, error_rate, deletion_chance,
                 if not data:
                     break
                 disturbed_data = disturb(data, error_rate, deletion_chance, rng)
+                dataDump(disturbed_data, verbose, hexadecimal, dirChar, len(disturbed_data), outgoingByte)
+                outgoingByte += len(disturbed_data)
                 dst_socket.sendall(disturbed_data)
             except socket.timeout:
                 continue  # Continue the loop if timeout occurs, check the stop event
@@ -65,8 +80,8 @@ def main(args):
     signal.signal(signal.SIGINT, lambda s, f: signal_handler(stop_event))
 
     # Create and start threads
-    thread_AB = threading.Thread(target=handle_connection, args=(socket_A, socket_B, args.seed_AB, args.error_rate, args.deletion_chance, stop_event, tracer), name="A->B")
-    thread_BA = threading.Thread(target=handle_connection, args=(socket_B, socket_A, args.seed_BA, args.error_rate, args.deletion_chance, stop_event, tracer), name="B->A")
+    thread_AB = threading.Thread(target=handle_connection, args=(socket_A, socket_B, args.seed_AB, args.error_rate, args.deletion_chance, args.v, args.x, '>', stop_event, tracer), name="A->B")
+    thread_BA = threading.Thread(target=handle_connection, args=(socket_B, socket_A, args.seed_BA, args.error_rate, args.deletion_chance, args.v, args.x, '<', stop_event, tracer), name="B->A")
 
     thread_AB.start()
     thread_BA.start()
