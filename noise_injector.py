@@ -138,6 +138,27 @@ noise is randomly generated, and can be controlled with parameters.
 The pseudorandom generators are independent for the two streams.
 '''
 
+epilog=\
+'''
+Usage example:
+
+socat TCP-LISTEN:9999,reuseaddr,fork pty,raw,echo=0,link=/tmp/ttyV1 &
+socat TCP-LISTEN:10000,reuseaddr,fork pty,raw,echo=0,link=/tmp/ttyV2 &
+python3 noise_injector.py -a 9999 -b 10000 --seed-AB 123456 --seed-BA 876543 --error-rate 0.002 --deletion_chance 0.15 &
+
+The first line create a pty linked to /tmp/ttyV1, and in the other end a TCP server on port 9999
+The second line create a pty linked to /tmp/ttyV2, and in the other end a TCP server on port 10000
+The third line run noise_injector.py that connect to both TCP server
+
+Now you can cat some into /tmp/ttyV1 and see them (corrupted) flowing out of /tmp/ttyV2
+
+cat </tmp/ttyV1
+cat >/tmp/ttyV2
+
+For debug purposes you can run the three commands in three different terminal, using parameters "-dd -v -x" (just as example, on both socat and noise_injector.py) you can see some useful debug informations
+'''
+
+
 class SmartFormatter(argparse.HelpFormatter):
     """Formatter that respects user carriage returns and adapts text to console size."""
 
@@ -154,7 +175,7 @@ class SmartFormatter(argparse.HelpFormatter):
 class Formatter(argparse.ArgumentDefaultsHelpFormatter, SmartFormatter, argparse.RawDescriptionHelpFormatter): pass
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(formatter_class=Formatter, description=description)
+    parser = argparse.ArgumentParser(formatter_class=Formatter, description=description, epilog=epilog)
     parser.add_argument("-a", "--host-a", metavar='[hostA:]portA', help="HostA address. HostA is optional and can be an ip or hostname. If omitted hostA is 'localhost'", type=hostValidator, required=True)
     parser.add_argument("-b", "--host-b", metavar='[hostB:]portB', help="HostB address. HostB is optional and can be an ip or hostname. If omitted hostB is 'localhost'", type=hostValidator, required=True)
     parser.add_argument("--seed-AB", type=int, default=12345, help="Seed for pseudorandom generator that add noise to stream A->B")
