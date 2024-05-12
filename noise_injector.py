@@ -41,7 +41,7 @@ def handle_connection(src_socket, dst_socket, seed, error_rate, deletion_chance,
             except socket.timeout:
                 continue  # Continue the loop if timeout occurs, check the stop event
     except Exception as e:
-        tracer.erroror(f"Error in thread {e}")
+        tracer.error(f"Error in thread {e}")
     finally:
         tracer.warning("thread end")
     stop_event.set()
