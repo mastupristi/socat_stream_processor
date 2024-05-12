@@ -29,7 +29,7 @@ def disturb(data, error_rate, deletion_chance, rng):
 def handle_connection(src_socket, dst_socket, seed, error_rate, deletion_chance, stop_event, tracer):
     tracer.info("thread started")
     rng = random.Random(seed)
-    src_socket.settimeout(0.25)  # Set timeout to 1 second for the source socket
+    src_socket.settimeout(0.25)  # Set timeout to 250ms for the source socket
     try:
         while not stop_event.is_set():
             try:
