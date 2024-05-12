@@ -10,12 +10,9 @@ from dataTracer import dataTracer
 
 
 
-gTracer = None
-
 # Gestione del segnale di interruzione (Ctrl+C)
-def signal_handler(stop_event):
-    global gTracer
-    gTracer.info("Signal received, stopping threads...")
+def signal_handler(stop_event, tracer):
+    tracer.info("Signal received, stopping threads...")
     stop_event.set()
 
 def disturb(data, error_rate, deletion_chance, rng):
@@ -65,8 +62,6 @@ def handle_connection(src_socket, dst_socket, seed, error_rate, deletion_chance,
 def main(args):
 
     tracer = create_tracer(__name__, args.debug)
-    global gTracer
-    gTracer = tracer
     tracer.info("Starting")
     # Prepare connections
     socket_A = socket.create_connection((*args.host_a,))
@@ -76,7 +71,7 @@ def main(args):
 
     # Event to signal threads to stop
     stop_event = threading.Event()
-    signal.signal(signal.SIGINT, lambda s, f: signal_handler(stop_event))
+    signal.signal(signal.SIGINT, lambda s, f: signal_handler(stop_event, tracer))
 
     # Create and start threads
     thread_AB = threading.Thread(target=handle_connection, args=(socket_A, socket_B, args.seed_AB, args.error_rate, args.deletion_chance, args.v, args.x, '>', stop_event, tracer), name="A->B")
