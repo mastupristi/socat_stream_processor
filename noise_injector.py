@@ -73,7 +73,6 @@ def main(args):
     socket_B = socket.create_connection((*args.host_b,))
 
     tracer.info("Socket created A %d and B %d" % (socket_A.fileno(), socket_B.fileno()))
-    tracer.info("Socket B created [%d]" % socket_B.fileno())
 
     # Event to signal threads to stop
     stop_event = threading.Event()
