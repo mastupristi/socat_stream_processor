@@ -1,6 +1,6 @@
 # Socat stream processor
 
-The main purpose of this project is didactic, to learn (better) python, learn programming techniques needed in the cvarious use cases that sim arise from time to time, learn how to use `socat` better, etc.
+The main purpose of this project is didactic, to learn (better) python, learn programming techniques needed in the various use cases that sim arise from time to time, learn how to use `socat` better, etc.
 
 This repository contains some stream processors. Their main scope of use is together with `socat`. However, stream processors act on TCP streams, so they can be used in any domain where this mode of communication is used.
 A stream processor means something that takes a stream and processes it in various ways.
@@ -14,7 +14,7 @@ I've tried to combine this with the need/want to learn more and more Python (thi
 
 Two instances of `socat` are used, each of which creates a device pty and acts as a TCP server. The stream processor will connect to these two TCP servers and start processing traffic in the two directions.
 
-### Noise injeector
+### Noise injector
 
 This stream processor is the progenitor. It involves injecting "noise" onto streams in both directions.
 
@@ -28,9 +28,9 @@ There are other parameters to set the seed of random generators (one per directi
 The command help is there for that purpose.
 
 There are 3 implementations of this:
-mte: two threads and python events per signaling
-mts: two threads and scoket for signaling
-sts: single thread and scoket for signaling
+- **mte**: two threads and python events per signaling
+- **mts**: two threads and socket for signaling
+- **sts**: single thread and socket for signaling
 
 #### Examples
 
