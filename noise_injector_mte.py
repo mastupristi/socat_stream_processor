@@ -1,3 +1,16 @@
+#  Copyright 2024 Massimiliano Cialdi
+#  Licensed under the Apache License, Version 2.0 (the "License");
+#  you may not use this file except in compliance with the License.
+#  You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+#  Unless required by applicable law or agreed to in writing, software
+#  distributed under the License is distributed on an "AS IS" BASIS,
+#  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#  See the License for the specific language governing permissions and
+#  limitations under the License.
+
 import socket
 import argparse
 import threading
@@ -123,7 +136,7 @@ Data flows from host A to B and vice versa, but is "processed" to simulate a noi
      ▲                                              ▲
      │                                              │
      │                                              │
-     ▼              noise_injector.py               ▼
+     ▼            noise_injector_mte.py             ▼
 ┌─────────┐     ┌────────────────────────┐     ┌─────────┐
 │         │     │                        │     │         │
 │ HOST A  │◄────┼─────  add noise  ◄─────┼─────┤ HOST B  │
@@ -136,6 +149,9 @@ Data flows from host A to B and vice versa, but is "processed" to simulate a noi
 
 noise is randomly generated, and can be controlled with parameters.
 The pseudorandom generators are independent for the two streams.
+
+mte stands for Multi Thread Event
+This is implemented using two thread, and using python events as signaling channel
 '''
 
 epilog=\
